@@ -10,4 +10,4 @@ Unary:
 `-`  
 `count` (counts 1 in binary interpretation)  
 
-In Main.java there is an example of using parser + evaluate mechanism.
+In src/expression/Main.java there is an example of using parser + evaluate mechanism.
