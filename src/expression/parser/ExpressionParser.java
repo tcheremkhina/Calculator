@@ -120,36 +120,20 @@ public class ExpressionParser<T> extends BaseParser implements Parser<T> {
                     AbstractOperation<T> newExpr = new CheckedSubtract<T>(new Const<T>(type), (CommonExpression<T>) nextMember(), type);
                     next = AddMember(next, newExpr);
                 } else if (test('*')) {
-                    AbstractOperation<T> newExpr;
-                    /*
-                    if (test('*')) {
-                        newExpr = new CheckedPow(new Const(0), (CommonExpression)nextMember());
-                    } else {*/
-                        newExpr = new CheckedMultiply<T>(new Const<T>(type), (CommonExpression<T>) nextMember(), type);
-                    // }
+                    AbstractOperation<T> newExpr = new CheckedMultiply<T>(new Const<T>(type), (CommonExpression<T>) nextMember(), type);
                     next = AddMember(next, newExpr);
                 } else if (test('/')) {
                     AbstractOperation<T> newExpr;
-                    /*if (test('/')) {
-                        newExpr = new CheckedLog(new Const(0), (CommonExpression)nextMember());
-                    } else {*/
                     newExpr = new CheckedDivide<T>(new Const<T>(type), (CommonExpression<T>) nextMember(), type);
-                    // }
                     next = AddMember(next, newExpr);
-                } /*else if (test('<')) {
-                    AbstractOperation newExpr = new MoveToLeft(new Const(0), (CommonExpression) nextMember());
-                    next = AddMember(next, newExpr);
-                } else if (test('>')) {
-                    AbstractOperation newExpr = new MoveToRight(new Const(0), (CommonExpression) nextMember());
-                    next = AddMember(next, newExpr);
-                }*/
+                }
             }
             if (!ok) {
                 throw new NoOperatorExpressionException(makeMessage("Operator expected"));
             }
         }
         if (!flag) {
-            throw new NoNextMemberExpressionException(makeMessage("next Member expected"));
+            throw new NoNextMemberExpressionException(makeMessage("Next Member expected"));
         }
         return next;
     }
@@ -163,28 +147,10 @@ public class ExpressionParser<T> extends BaseParser implements Parser<T> {
             sb.append(ch);
             nextChar();
         }
-        if (sb.toString().equals("count")) { //test('s')) {
-            // expect("quare");
+        if (sb.toString().equals("count")) {
             return new Count<T>((CommonExpression<T>) nextMember(), type);
-        } /*else if (sb.toString().equals("pow") && test('2')) { // (test('p')) {
-            // expect("ow2");
-            expect("2");
-            if (!between('(', '(') && !between('-', '-')) {
-                expect(' ');
-            }
-            return new CheckedPow2((CommonExpression)nextMember());
-
-        } *//*else if (sb.toString().equals("log") && test('2')) { // (test('l')) {
-            // expect("og2");
-            expect("2");
-            if (!between('(', '(') && !between('-', '-')) {
-                expect(' ');
-            }
-            return new CheckedLog2((CommonExpression)nextMember());
-        }*//* else if (sb.toString().equals("abs")) { //(test('a')) {
-            // expect("bs");
-            return new Abs((CommonExpression) nextMember());
-        }*/ /*else*/ if (sb.length() == 1 && (sb.toString().equals("x") || sb.toString().equals("y") ||
+        }
+        if (sb.length() == 1 && (sb.toString().equals("x") || sb.toString().equals("y") ||
                 sb.toString().equals("z")) || sb.length() >= 2) {
             if (sb.toString().equals("x")) {
                 vars.put('x', "x");
@@ -204,7 +170,7 @@ public class ExpressionParser<T> extends BaseParser implements Parser<T> {
             } else if (!vars.containsKey('y')) {
                 vars.put('y', sb.toString());
                 sb = new StringBuilder("y");
-            } else if (vars.containsKey('z')) {
+            } else if (!vars.containsKey('z')) {
                 vars.put('z', sb.toString());
                 sb = new StringBuilder("z");
             } else {
@@ -240,20 +206,6 @@ public class ExpressionParser<T> extends BaseParser implements Parser<T> {
                 between('/', '/')) {
             return true;
         }
-        if (test('<')) {
-            if (between('<', '<')) {
-                return true;
-            } else {
-                throw new InvalidExpressionException(makeMessage("single < symbol in expression"));
-            }
-        }
-        if (test('>')) {
-            if (between('>', '>')) {
-                return true;
-            } else {
-                throw new InvalidExpressionException(makeMessage("single > symbol in expression"));
-            }
-        }
         if (test('m')) {
             return true;
         }
@@ -262,11 +214,9 @@ public class ExpressionParser<T> extends BaseParser implements Parser<T> {
 
     private void copyDigits(final StringBuilder sb) {
         skipWhitespace();
-        int cnt = 0;
         while (between('0', '9')) {
             sb.append(ch);
             nextChar();
-            cnt++;
         }
     }
 
@@ -283,10 +233,10 @@ public class ExpressionParser<T> extends BaseParser implements Parser<T> {
         }
         if (sb.charAt(0) == '-') {
             if ((sb.length() > 11) || (sb.length() == 11 && sb.toString().compareTo("-2147483648") > 0)) {
-                throw new InvalidExpressionException(makeMessage("Constant overflow 1"));
+                throw new InvalidExpressionException(makeMessage("Constant overflow"));
             }
         } else if (sb.length() > 10 || (sb.length() == 10 && sb.toString().compareTo("2147483647") > 0)) {
-            throw new InvalidExpressionException(makeMessage("Constant overflow 2"));
+            throw new InvalidExpressionException(makeMessage("Constant overflow"));
         }
     }
 
